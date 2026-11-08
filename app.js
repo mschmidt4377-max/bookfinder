@@ -22,21 +22,47 @@ function seriesLabel(name, pos) {
   return name && p ? `${name} · ${p}` : name || p;
 }
 
+// Shelf items carry no working cover URL, so covers come from Open Library:
+// by cover id or ISBN when known, otherwise looked up by title and author after render.
 function coverSrc(b) {
-  if (b.image) return b.image;
   if (b.coverId != null) return `https://covers.openlibrary.org/b/id/${b.coverId}-L.jpg`;
   if (b.isbn) return `https://covers.openlibrary.org/b/isbn/${b.isbn}-L.jpg`;
   return null;
 }
 
+const coverCache = new Map();
+function lookupCover(b) {
+  const q = `${b.title} ${(b.authors || [])[0] || ""}`.trim();
+  if (!coverCache.has(q)) {
+    coverCache.set(q, getJson(`${OL}/search.json?q=${encodeURIComponent(q)}&fields=cover_i,isbn&limit=1`)
+      .then((d) => { const doc = (d.docs || [])[0] || {}; return doc.cover_i ? `https://covers.openlibrary.org/b/id/${doc.cover_i}-L.jpg` : doc.isbn?.[0] ? `https://covers.openlibrary.org/b/isbn/${doc.isbn[0]}-L.jpg` : null; })
+      .catch(() => null));
+  }
+  return coverCache.get(q);
+}
+
+function placeholder(title) {
+  return `<div class="flex aspect-2/3 flex-col justify-between overflow-hidden rounded-md bg-paper-deep p-3 ring-1 ring-ink/10"><span class="font-serif text-2xl leading-none text-accent">${esc(title.trim().slice(0, 1).toUpperCase() || "B")}</span><span class="line-clamp-4 font-serif text-sm leading-snug text-ink">${esc(title)}</span></div>`;
+}
+
 function cover(b) {
   const src = coverSrc(b);
   const title = b.title || "";
-  if (src) {
-    return `<div class="aspect-2/3 overflow-hidden rounded-md bg-paper-deep shadow-[0_14px_22px_-16px_rgba(28,25,21,0.85),0_1px_2px_rgba(28,25,21,0.18)] ring-1 ring-ink/10 transition duration-200 group-hover:-translate-y-1">
-      <img src="${esc(src)}" alt="" loading="lazy" decoding="async" class="h-full w-full object-cover" onerror="this.parentNode.innerHTML='<div class=&quot;flex h-full flex-col justify-between p-3&quot;><span class=&quot;font-serif text-2xl leading-none text-accent&quot;>${esc(title.trim().slice(0, 1).toUpperCase() || "B")}</span><span class=&quot;line-clamp-4 font-serif text-sm leading-snug text-ink&quot;>${esc(title)}</span></div>'"></div>`;
-  }
-  return `<div class="flex aspect-2/3 flex-col justify-between overflow-hidden rounded-md bg-paper-deep p-3 ring-1 ring-ink/10"><span class="font-serif text-2xl leading-none text-accent">${esc(title.trim().slice(0, 1).toUpperCase() || "B")}</span><span class="line-clamp-4 font-serif text-sm leading-snug text-ink">${esc(title)}</span></div>`;
+  const wrap = `aspect-2/3 overflow-hidden rounded-md bg-paper-deep shadow-[0_14px_22px_-16px_rgba(28,25,21,0.85),0_1px_2px_rgba(28,25,21,0.18)] ring-1 ring-ink/10 transition duration-200 group-hover:-translate-y-1`;
+  if (src) return `<div class="${wrap}"><img src="${esc(src)}" alt="" loading="lazy" decoding="async" class="h-full w-full object-cover" onerror="this.parentNode.innerHTML=this.dataset.fallback" data-fallback="${esc(placeholder(title))}"></div>`;
+  return `<div class="${wrap}" data-lookup="${esc(JSON.stringify({ title, authors: b.authors || [] }))}">${placeholder(title)}</div>`;
+}
+
+// Fill in covers that were not known at render time.
+async function fillCovers(root) {
+  const slots = [...root.querySelectorAll("[data-lookup]")];
+  await Promise.all(slots.map(async (slot) => {
+    const info = JSON.parse(slot.dataset.lookup);
+    const src = await lookupCover(info);
+    if (!src) return;
+    slot.innerHTML = `<img src="${esc(src)}" alt="" loading="lazy" decoding="async" class="h-full w-full object-cover" onerror="this.parentNode.innerHTML=this.dataset.fallback" data-fallback="${esc(placeholder(info.title))}">`;
+    slot.removeAttribute("data-lookup");
+  }));
 }
 
 function bookCard(b) {
@@ -202,5 +228,5 @@ document.addEventListener("DOMContentLoaded", () => {
   document.body.innerHTML = shell(page);
   const main = $("#main");
   const run = { home: renderHome, search: renderSearch, book: renderBook, cats: renderCats }[page];
-  if (run) run(main).catch((e) => { main.innerHTML = `<p class="text-muted">Something went wrong loading this page (${esc(e.message)}).</p>`; });
+  if (run) run(main).then(() => fillCovers(main)).catch((e) => { main.innerHTML = `<p class="text-muted">Something went wrong loading this page (${esc(e.message)}).</p>`; });
 });
