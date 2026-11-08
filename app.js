@@ -96,7 +96,7 @@ function shell(page) {
         <nav class="flex items-center justify-end gap-3 text-sm"><a href="cats.html" class="min-h-11 inline-flex items-center">Cats</a></nav>
         <form class="relative col-span-2 min-w-0 sm:col-span-2" role="search" action="search.html" method="get">
           <label for="book-search" class="sr-only">Search books</label>
-          <input id="book-search" name="q" value="${esc(q)}" placeholder="Title, author, or ISBN" enterkeyhint="search" class="h-12 w-full rounded-full border border-line bg-card pr-28 pl-5 text-ink placeholder:text-muted" />
+          <input id="book-search" name="q" value="${esc(q)}" placeholder="Title, author, or ISBN" enterkeyhint="search" class="h-12 w-full rounded-full border border-line bg-card pr-28 text-ink placeholder:text-muted" style="padding-left:1.25rem" />
           <input type="hidden" name="page" value="1" /><input type="hidden" name="sort" value="match" />
           <button type="submit" class="absolute top-1.5 right-1.5 bottom-1.5 min-w-20 rounded-full bg-accent px-4 text-sm font-medium text-accent-ink">Search</button>
         </form>
