@@ -1,0 +1,36 @@
+{
+  "url": "http://127.0.0.1:8080/",
+  "viewports": {
+    "desktop": {
+      "width": 1280,
+      "height": 800,
+      "status": 200,
+      "title": "BookFinder — Find books easily",
+      "hasCanvas": false,
+      "bodyTextLen": 6047,
+      "bodyTextHash": "0a26e6a625cab89af5bb9122a8947e10a91834f2d755f2352b23a6618c6ff7e6",
+      "bodyTextPrefix": "BookFinder Find books easily Cats Categories Search books Search",
+      "horizontalOverflow": false,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "/workspace/screenshots/app-builder-preview.png"
+    },
+    "mobile": {
+      "width": 390,
+      "height": 844,
+      "status": 200,
+      "title": "BookFinder — Find books easily",
+      "hasCanvas": false,
+      "bodyTextLen": 6047,
+      "bodyTextHash": "0a26e6a625cab89af5bb9122a8947e10a91834f2d755f2352b23a6618c6ff7e6",
+      "bodyTextPrefix": "BookFinder Find books easily Cats Categories Search books Search",
+      "horizontalOverflow": false,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "/workspace/screenshots/app-builder-preview-mobile.png"
+    }
+  },
+  "brandWarnings": [],
+  "authWarnings": [],
+  "verdictFile": "/workspace/screenshots/app-builder-preview.json"
+}

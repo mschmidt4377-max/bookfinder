@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="BookFinder">
+  <rect width="32" height="32" rx="7" fill="#1C1915"/>
+  <rect x="2.5" y="2.5" width="27" height="27" rx="5.5" fill="#F4EFE6"/>
+  <path d="M11 4.5h10v19.2l-5-3.8-5 3.8V4.5z" fill="#B8432F"/>
+</svg>

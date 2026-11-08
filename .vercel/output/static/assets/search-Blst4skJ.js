@@ -1,0 +1,1 @@
+import{t as e}from"./jsx-runtime-BkSabwWG.js";var t=e();function n({error:e}){return(0,t.jsxs)(`div`,{className:`py-10`,children:[(0,t.jsx)(`h1`,{className:`font-serif text-3xl`,children:`Search didn’t finish`}),(0,t.jsx)(`p`,{className:`mt-3 max-w-lg text-muted`,children:e instanceof Error?e.message:`Search didn’t finish.`})]})}export{n as errorComponent};

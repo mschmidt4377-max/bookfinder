@@ -1,0 +1,36 @@
+{
+  "url": "http://127.0.0.1:8080/cats",
+  "viewports": {
+    "desktop": {
+      "width": 1280,
+      "height": 800,
+      "status": 200,
+      "title": "Cats · BookFinder",
+      "hasCanvas": false,
+      "bodyTextLen": 2595,
+      "bodyTextHash": "8f1ef56429ae475bee98cecab8a3f8f1ac6546ac928f9e308cd11434270a2c7f",
+      "bodyTextPrefix": "BookFinder Find books easily Cats Search books Search The cat se",
+      "horizontalOverflow": false,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "/workspace/screenshots/cats-preview.png"
+    },
+    "mobile": {
+      "width": 390,
+      "height": 844,
+      "status": 200,
+      "title": "Cats · BookFinder",
+      "hasCanvas": false,
+      "bodyTextLen": 2595,
+      "bodyTextHash": "8f1ef56429ae475bee98cecab8a3f8f1ac6546ac928f9e308cd11434270a2c7f",
+      "bodyTextPrefix": "BookFinder Find books easily Cats Search books Search The cat se",
+      "horizontalOverflow": false,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "/workspace/screenshots/cats-preview-mobile.png"
+    }
+  },
+  "brandWarnings": [],
+  "authWarnings": [],
+  "verdictFile": "/workspace/screenshots/cats-preview.json"
+}
