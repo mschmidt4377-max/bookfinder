@@ -25,6 +25,7 @@ function seriesLabel(name, pos) {
 // Shelf items carry no working cover URL, so covers come from Open Library:
 // by cover id or ISBN when known, otherwise looked up by title and author after render.
 function coverSrc(b) {
+  if (b.image) return b.image;
   if (b.coverId != null) return `https://covers.openlibrary.org/b/id/${b.coverId}-L.jpg`;
   if (b.isbn) return `https://covers.openlibrary.org/b/isbn/${b.isbn}-L.jpg`;
   return null;
