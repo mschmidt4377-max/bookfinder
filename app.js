@@ -87,16 +87,32 @@ function bookRow(books) {
 
 const CATEGORIES = [["trending","Trending today"],["espanol","Español"],["nyt","NYT Best Sellers"],["hilarious","Hilarious"],["fantasy","Fantasy"],["mystery","Mystery"],["romance","Romance"],["scifi","Science fiction"],["horror","Horror"],["ya","Young adult"],["classics","Classics"],["biography","Biography"],["thriller","Thriller"],["historical","Historical fiction"],["adventure","Adventure"],["graphic","Graphic novels"],["nonfiction","Nonfiction"],["children","Children's"],["crime","Crime"],["stories","Short stories"]];
 
+// Popular rows, always shown across the top. The seasonal pick changes with the month.
+const POPULAR = [["trending", "Trending"], ["nyt", "Best Sellers"], ["fantasy", "Fantasy"], ["romance", "Romance"], ["mystery", "Mystery"], ["thriller", "Thriller"]];
+function seasonal(month = new Date().getMonth()) {
+  if (month === 9) return { label: "🎃 Halloween reads", href: "index.html#shelf-horror" };
+  if (month === 10 || month === 11) return { label: "🎄 Holiday reads", href: "search.html?q=christmas&page=1&sort=match" };
+  if (month === 0 || month === 1) return { label: "💘 Valentine's reads", href: "index.html#shelf-romance" };
+  if (month >= 5 && month <= 7) return { label: "☀️ Summer reads", href: "search.html?q=beach+read&page=1&sort=match" };
+  if (month === 8) return { label: "🎒 Back to school", href: "index.html#shelf-ya" };
+  return { label: "🌷 Spring reads", href: "index.html#shelf-historical" };
+}
+function popularLinks() {
+  const season = seasonal();
+  const link = (href, label, extra = "") => `<a href="${href}" class="inline-flex min-h-11 items-center whitespace-nowrap ${extra}">${esc(label)}</a>`;
+  return `<span class="nav-pop">${link(season.href, season.label, "font-medium text-accent")}${POPULAR.map(([id, label]) => link(`index.html#shelf-${id}`, label)).join("")}</span>`;
+}
+
 function shell(page) {
   const q = page === "search" ? params.get("q") || "" : "";
-  return `<div class="min-h-screen bg-paper text-ink">
+  return `<style>.nav-pop{display:none;align-items:center;gap:1.25rem;margin-right:.25rem}@media(min-width:760px){.nav-pop{display:flex}}@media(max-width:1099px){.nav-pop a:nth-child(n+5){display:none}}@media(max-width:899px){.nav-pop a:nth-child(n+4){display:none}}</style><div class="min-h-screen bg-paper text-ink">
     <header class="sticky top-0 z-20 border-b border-line bg-paper/95 backdrop-blur-sm">
       <div class="mx-auto grid max-w-6xl grid-cols-[1fr_auto] items-center gap-x-2 gap-y-2 px-4 py-2 sm:grid-cols-[auto_1fr] sm:gap-6 sm:py-3">
         <a href="index.html" class="flex min-w-0 shrink-0 items-center gap-2.5">
           <span class="grid size-10 shrink-0 place-items-center rounded-xl bg-accent text-accent-ink sm:size-11"><span aria-hidden>📖</span></span>
           <span class="min-w-0"><span class="block font-serif text-lg leading-none sm:text-xl">BookFinder</span><span class="mt-1 hidden text-xs text-muted sm:block">Find books easily</span></span>
         </a>
-        <nav class="flex items-center justify-end gap-4 text-sm"><details id="cat-menu" style="position:relative"><summary class="min-h-11 inline-flex items-center" style="cursor:pointer;list-style:none">Categories ▾</summary><div class="rounded-xl border border-line bg-card" style="position:absolute;right:0;top:100%;z-index:40;width:15rem;max-height:70vh;overflow-y:auto;padding:6px;box-shadow:0 12px 28px -12px rgba(28,25,21,0.45)">${CATEGORIES.map(([id, label]) => `<a href="index.html#shelf-${id}" class="flex min-h-11 items-center rounded-lg px-3" style="white-space:nowrap">${esc(label)}</a>`).join("")}</div></details><a href="cats.html" class="min-h-11 inline-flex items-center">Cats</a></nav>
+        <nav class="flex items-center justify-end gap-4 text-sm">${popularLinks()}<details id="cat-menu" style="position:relative"><summary class="min-h-11 inline-flex items-center" style="cursor:pointer;list-style:none">Categories ▾</summary><div class="rounded-xl border border-line bg-card" style="position:absolute;right:0;top:100%;z-index:40;width:15rem;max-height:70vh;overflow-y:auto;padding:6px;box-shadow:0 12px 28px -12px rgba(28,25,21,0.45)">${CATEGORIES.map(([id, label]) => `<a href="index.html#shelf-${id}" class="flex min-h-11 items-center rounded-lg px-3" style="white-space:nowrap">${esc(label)}</a>`).join("")}</div></details><a href="cats.html" class="min-h-11 inline-flex items-center">Cats</a></nav>
         <form class="relative col-span-2 min-w-0 sm:col-span-2" role="search" action="search.html" method="get">
           <label for="book-search" class="sr-only">Search books</label>
           <input id="book-search" name="q" value="${esc(q)}" placeholder="Title, author, or ISBN" enterkeyhint="search" class="h-12 w-full rounded-full border border-line bg-card pr-28 text-ink placeholder:text-muted" style="padding-left:1.25rem" />
