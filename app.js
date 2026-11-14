@@ -85,6 +85,8 @@ function bookRow(books) {
     ${books.map((b) => `<div class="w-36 shrink-0 snap-start sm:w-auto">${bookCard(b)}</div>`).join("")}</div>`;
 }
 
+const CATEGORIES = [["trending","Trending today"],["espanol","Español"],["nyt","NYT Best Sellers"],["hilarious","Hilarious"],["fantasy","Fantasy"],["mystery","Mystery"],["romance","Romance"],["scifi","Science fiction"],["horror","Horror"],["ya","Young adult"],["classics","Classics"],["biography","Biography"],["thriller","Thriller"],["historical","Historical fiction"],["adventure","Adventure"],["graphic","Graphic novels"],["nonfiction","Nonfiction"],["children","Children's"],["crime","Crime"],["stories","Short stories"]];
+
 function shell(page) {
   const q = page === "search" ? params.get("q") || "" : "";
   return `<div class="min-h-screen bg-paper text-ink">
@@ -94,7 +96,7 @@ function shell(page) {
           <span class="grid size-10 shrink-0 place-items-center rounded-xl bg-accent text-accent-ink sm:size-11"><span aria-hidden>📖</span></span>
           <span class="min-w-0"><span class="block font-serif text-lg leading-none sm:text-xl">BookFinder</span><span class="mt-1 hidden text-xs text-muted sm:block">Find books easily</span></span>
         </a>
-        <nav class="flex items-center justify-end gap-3 text-sm"><a href="cats.html" class="min-h-11 inline-flex items-center">Cats</a></nav>
+        <nav class="flex items-center justify-end gap-4 text-sm"><details id="cat-menu" style="position:relative"><summary class="min-h-11 inline-flex items-center" style="cursor:pointer;list-style:none">Categories ▾</summary><div class="rounded-xl border border-line bg-card" style="position:absolute;right:0;top:100%;z-index:40;width:15rem;max-height:70vh;overflow-y:auto;padding:6px;box-shadow:0 12px 28px -12px rgba(28,25,21,0.45)">${CATEGORIES.map(([id, label]) => `<a href="index.html#shelf-${id}" class="flex min-h-11 items-center rounded-lg px-3" style="white-space:nowrap">${esc(label)}</a>`).join("")}</div></details><a href="cats.html" class="min-h-11 inline-flex items-center">Cats</a></nav>
         <form class="relative col-span-2 min-w-0 sm:col-span-2" role="search" action="search.html" method="get">
           <label for="book-search" class="sr-only">Search books</label>
           <input id="book-search" name="q" value="${esc(q)}" placeholder="Title, author, or ISBN" enterkeyhint="search" class="h-12 w-full rounded-full border border-line bg-card pr-28 text-ink placeholder:text-muted" style="padding-left:1.25rem" />
@@ -157,7 +159,7 @@ async function renderHome(main) {
       </section>
       ${recent.length ? `<section><h2 class="font-serif text-2xl">Recent searches</h2><div class="mt-4 flex flex-wrap gap-2">${recent.map((r) => `<a href="search.html?q=${encodeURIComponent(r)}&page=1&sort=match" class="inline-flex min-h-11 items-center rounded-full bg-ink px-4 text-sm text-card">${esc(r)}</a>`).join("")}</div></section>` : ""}
       <section><h2 class="font-serif text-2xl">Start a series</h2><div class="mt-4 flex flex-wrap gap-2">${SERIES.map((s) => `<a href="search.html?q=${encodeURIComponent(s)}&page=1&sort=match" class="inline-flex min-h-11 items-center rounded-full border border-line bg-card px-4 text-sm hover:border-ink">${esc(s)}</a>`).join("")}</div></section>
-      ${shelves.map((s) => `<section>
+      ${shelves.map((s) => `<section id="shelf-${esc(s.id)}" style="scroll-margin-top:8rem">
         <div class="flex flex-wrap items-end justify-between gap-3">
           <div><h2 class="font-serif text-2xl">${esc(s.title)}</h2><p class="mt-1 text-sm text-muted">${esc(s.note)}</p></div>
           ${s.q ? `<a href="search.html?q=${encodeURIComponent(s.q)}&page=1&sort=match" class="inline-flex min-h-11 items-center text-sm font-medium text-accent">See all</a>` : ""}
@@ -229,5 +231,6 @@ document.addEventListener("DOMContentLoaded", () => {
   document.body.innerHTML = shell(page);
   const main = $("#main");
   const run = { home: renderHome, search: renderSearch, book: renderBook, cats: renderCats }[page];
-  if (run) run(main).then(() => fillCovers(main)).catch((e) => { main.innerHTML = `<p class="text-muted">Something went wrong loading this page (${esc(e.message)}).</p>`; });
+  document.addEventListener("click", (e) => { const m = document.getElementById("cat-menu"); if (m && m.open && (!m.contains(e.target) || e.target.closest("a"))) m.open = false; });
+  if (run) run(main).then(() => { fillCovers(main); if (location.hash) document.getElementById(location.hash.slice(1))?.scrollIntoView(); }).catch((e) => { main.innerHTML = `<p class="text-muted">Something went wrong loading this page (${esc(e.message)}).</p>`; });
 });
